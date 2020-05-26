@@ -23,7 +23,9 @@ function RoomRepository(client)
     this.onPlayerReady    = this.onPlayerReady.bind(this);
     this.onPlayerColor    = this.onPlayerColor.bind(this);
     this.onPlayerName     = this.onPlayerName.bind(this);
+    this.onPlayerTeam     = this.onPlayerTeam.bind(this);
     this.onConfigOpen     = this.onConfigOpen.bind(this);
+    this.onConfigTeam     = this.onConfigTeam.bind(this);
     this.onConfigMaxScore = this.onConfigMaxScore.bind(this);
     this.onConfigVariable = this.onConfigVariable.bind(this);
     this.onConfigBonus    = this.onConfigBonus.bind(this);
@@ -50,7 +52,9 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('player:ready', this.onPlayerReady);
     this.client.on('player:color', this.onPlayerColor);
     this.client.on('player:name', this.onPlayerName);
+    this.client.on('player:team', this.onPlayerTeam);
     this.client.on('room:config:open', this.onConfigOpen);
+    this.client.on('room:config:team', this.onConfigTeam);
     this.client.on('room:config:max-score', this.onConfigMaxScore);
     this.client.on('room:config:variable', this.onConfigVariable);
     this.client.on('room:config:bonus', this.onConfigBonus);
@@ -75,8 +79,10 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:game:start', this.onGameStart);
     this.client.off('player:ready', this.onPlayerReady);
     this.client.off('player:color', this.onPlayerColor);
+    this.client.off('player:team', this.onPlayerTeam);
     this.client.off('player:name', this.onPlayerName);
     this.client.off('room:config:open', this.onConfigOpen);
+    this.client.off('room:config:team', this.onConfigTeam);
     this.client.off('room:config:max-score', this.onConfigMaxScore);
     this.client.off('room:config:variable', this.onConfigVariable);
     this.client.off('room:config:bonus', this.onConfigBonus);
@@ -170,7 +176,8 @@ RoomRepository.prototype.createRoom = function(data, clients)
                 client,
                 data.players[i].name,
                 data.players[i].color,
-                data.players[i].ready
+                data.players[i].ready,
+                data.players[i].team
             ));
         } else {
             console.error('Could not find a client:', data.players[i].client, clients);
@@ -178,6 +185,7 @@ RoomRepository.prototype.createRoom = function(data, clients)
     }
 
     room.config.setOpen(data.config.open);
+    room.config.setTeam(data.config.team);
     room.config.setPassword(data.config.password);
     room.config.setMaxScore(data.config.maxScore);
 
@@ -251,11 +259,12 @@ RoomRepository.prototype.amIMaster = function()
  * @param {String} name
  * @param {Function} callback
  */
-RoomRepository.prototype.addPlayer = function(name, color, callback)
+RoomRepository.prototype.addPlayer = function(name, color, team, callback)
 {
     this.client.addEvent('player:add', {
         name: name.substr(0, Player.prototype.maxLength),
-        color: color ? color.substr(0, Player.prototype.colorMaxLength) : null
+        color: color ? color.substr(0, Player.prototype.colorMaxLength) : null,
+        team: team ? team : null
     }, callback);
 };
 
@@ -320,6 +329,19 @@ RoomRepository.prototype.setColor = function(player, color, callback)
     });
 };
 
+RoomRepository.prototype.setTeam = function(player, team, callback)
+{
+    this.client.addEvent('room:team', {
+        player: player.id,
+        team: team.substr(0, Player.prototype.teamMaxLength)
+    }, function (result) {
+        if (!result.success) {
+            console.error('Could not set team %s for player %s', player.teamName, player.name);
+        }
+        player.setTeam(result.team);
+        callback(result);
+    });
+};
 /**
  * Set name
  *
@@ -347,6 +369,11 @@ RoomRepository.prototype.setName = function(player, name, callback)
 RoomRepository.prototype.setReady = function(player, callback)
 {
     this.client.addEvent('room:ready', {player: player}, callback);
+};
+
+RoomRepository.prototype.setConfigTeam = function(team, callback)
+{
+    this.client.addEvent('room:config:team', {team: team ? true : false}, callback);
 };
 
 /**
@@ -438,7 +465,8 @@ RoomRepository.prototype.onJoinRoom = function(e)
             this.clients.getById(data.player.client),
             data.player.name,
             data.player.color,
-            data.player.ready
+            data.player.ready,
+            data.player.team
         );
 
     if (this.room.addPlayer(player)) {
@@ -493,6 +521,17 @@ RoomRepository.prototype.onPlayerColor = function(e)
     if (player) {
         player.setColor(data.color);
         this.emit('player:color', {player: player});
+    }
+};
+
+RoomRepository.prototype.onPlayerTeam = function(e)
+{
+    var data = e.detail,
+        player = this.room.players.getById(data.player);
+
+    if (player) {
+        player.setTeam(data.team);
+        this.emit('player:team', {player: player});
     }
 };
 
@@ -555,6 +594,15 @@ RoomRepository.prototype.onConfigOpen = function(e)
     this.room.config.setPassword(data.password);
 
     this.emit('room:config:open', {open: data.open, password: data.password});
+};
+
+RoomRepository.prototype.onConfigTeam = function(e)
+{
+    var data = e.detail;
+
+    this.room.config.setTeam(data.team);
+
+    this.emit('room:config:team', {team: data.team});
 };
 
 /**

@@ -42,6 +42,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.toggleSound     = this.sound.toggle;
     this.$scope.toggleRadio     = this.radio.toggle;
     this.$scope.avatars         = null;
+    this.$scope.teams           = null;
     this.$scope.spectating      = false;
     this.$scope.$parent.profile = false;
 
@@ -115,6 +116,7 @@ GameController.prototype.loadGame = function(game)
     // Hydrate scope:
     this.$scope.game    = this.game;
     this.$scope.avatars = this.game.avatars.items;
+    this.$scope.teams   = this.game.teams.items;
 
     this.attachEvents();
 

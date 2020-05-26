@@ -66,6 +66,10 @@ RoomConfig.prototype.setOpen = function(open)
     this.open = open;
 };
 
+RoomConfig.prototype.setTeam = function(team)
+{
+    this.team = team;
+};
 /**
  * Set password
  *

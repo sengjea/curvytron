@@ -37,10 +37,11 @@ function RoomController(room)
         onReady: function (data) { controller.onReady(this, data[0], data[1]); },
         onKickVote: function (data) { controller.onKickVote(this, data[0], data[1]); },
         onName: function (data) { controller.onName(this, data[0], data[1]); },
+        onTeam: function (data) { controller.onTeam(this, data[0], data[1]);},
         onColor: function (data) { controller.onColor(this, data[0], data[1]); },
         onLeave: function () { controller.onLeave(this); },
         onActivity: function () { controller.onActivity(this); },
-
+        onConfigTeam: function(data) { controller.onConfigTeam(this, data[0], data[1]); },
         onConfigOpen: function (data) { controller.onConfigOpen(this, data[0], data[1]); },
         onConfigMaxScore: function (data) { controller.onConfigMaxScore(this, data[0], data[1]); },
         onConfigVariable: function (data) { controller.onConfigVariable(this, data[0], data[1]); },
@@ -155,6 +156,7 @@ RoomController.prototype.attachEvents = function(client)
     client.on('player:kick', this.callbacks.onKickVote);
     client.on('room:ready', this.callbacks.onReady);
     client.on('room:color', this.callbacks.onColor);
+    client.on('room:team', this.callbacks.onTeam);
     client.on('room:name', this.callbacks.onName);
     client.on('players:clear', this.onPlayersClear);
 };
@@ -175,6 +177,7 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('player:kick', this.callbacks.onKickVote);
     client.removeListener('room:ready', this.callbacks.onReady);
     client.removeListener('room:color', this.callbacks.onColor);
+    client.removeListener('room:team', this.callbacks.onTeam);
     client.removeListener('room:name', this.callbacks.onName);
     client.removeListener('players:clear', this.onPlayersClear);
 };
@@ -225,6 +228,7 @@ RoomController.prototype.setRoomMaster = function(client)
         this.roomMaster.on('close', this.removeRoomMaster);
         this.roomMaster.on('room:leave', this.removeRoomMaster);
         this.roomMaster.on('room:config:open', this.callbacks.onConfigOpen);
+        this.roomMaster.on('room:config:team', this.callbacks.onConfigTeam);
         this.roomMaster.on('room:config:max-score', this.callbacks.onConfigMaxScore);
         this.roomMaster.on('room:config:variable', this.callbacks.onConfigVariable);
         this.roomMaster.on('room:config:bonus', this.callbacks.onConfigBonus);
@@ -242,6 +246,7 @@ RoomController.prototype.removeRoomMaster = function()
         this.roomMaster.removeListener('close', this.removeRoomMaster);
         this.roomMaster.removeListener('room:leave', this.removeRoomMaster);
         this.roomMaster.removeListener('room:config:open', this.callbacks.onConfigOpen);
+        this.roomMaster.removeListener('room:config:team', this.callbacks.onConfigTeam);
         this.roomMaster.removeListener('room:config:max-score', this.callbacks.onConfigMaxScore);
         this.roomMaster.removeListener('room:config:variable', this.callbacks.onConfigVariable);
         this.roomMaster.removeListener('room:config:bonus', this.callbacks.onConfigBonus);
@@ -395,7 +400,8 @@ RoomController.prototype.onActivity = function(client)
 RoomController.prototype.onPlayerAdd = function(client, data, callback)
 {
     var name = data.name.substr(0, Player.prototype.maxLength).trim(),
-        color = typeof(data.color) !== 'undefined' ? data.color : null;
+        color = typeof(data.color) !== 'undefined' ? data.color : null,
+        team = typeof(data.team) !== 'undefined' ? data.team : null;
 
     if (!name.length) {
         return callback({success: false, error: 'Invalid name.'});
@@ -414,7 +420,7 @@ RoomController.prototype.onPlayerAdd = function(client, data, callback)
         return callback({success: false, error: 'Unknown client'});
     }
 
-    var player = new Player(client, name, color);
+    var player = new Player(client, name, color, false, team);
 
     if (this.room.addPlayer(player)) {
         client.players.add(player);
@@ -487,6 +493,22 @@ RoomController.prototype.onColor = function(client, data, callback)
         callback({success: false, color: player.color});
     }
 };
+
+RoomController.prototype.onTeam = function(client, data, callback)
+{
+    var player = client.players.getById(data.player),
+        teamName = data.team;
+    if (!player) {
+        return callback({success: false});
+    }
+
+    if (player.setTeam(teamName)) {
+        callback({success: true, team: player.teamName});
+        this.socketGroup.addEvent('player:team', { player: player.id, team: player.teamName });
+    } else {
+        callback({success: false, color: player.color});
+    }
+}
 
 /**
  * On player change name
@@ -595,6 +617,19 @@ RoomController.prototype.onConfigOpen = function(client, data, callback)
     }
 };
 
+RoomController.prototype.onConfigTeam = function(client, data, callback)
+{
+
+    var success = this.isRoomMaster(client) && this.room.config.setTeam(data.team);
+    callback({
+        success: success,
+        team: this.room.config.team
+    });
+
+    if (success) {
+        this.socketGroup.addEvent('room:config:team', { team: this.room.config.team });
+    }
+};
 /**
  * On config max score
  *

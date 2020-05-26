@@ -16,6 +16,15 @@
                 <input type="text" class="form-control" id="password" ng-model="config.password" readonly maxlength="4" />
             </div>
         </div>
+        <div class="team-game">
+            <h2>Team Game</h2>
+            <label class="toggler" ng-class="{ 'active': config.team }" id="is-team" ng-click="setTeam(true)">Enabled</label>
+            <div class="toggle" ng-class="{ 'active': config.team }">
+                <input type="checkbox" id="open" ng-model="config.team" ng-change="setTeam(config.team)" ng-disabled="!master" class="check">
+                <b class="b switch"></b>
+            </div>
+            <label class="toggler" ng-class="{ 'active': config.team }" id="is-individual" ng-click="setTeam(false)">Disabled</label>
+        </div>
     </div>
     <div class="col-lg-8 bonus-list">
         <h2>Bonus</h2>

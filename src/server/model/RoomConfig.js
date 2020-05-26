@@ -49,7 +49,12 @@ RoomConfig.prototype.setOpen = function(open)
 
     return false;
 };
-
+RoomConfig.prototype.setTeam = function(team)
+{
+    this.team = team;
+    this.emit('room:config:team', {room: this.room, team: this.team});
+    return true;
+};
 /**
  * Get available bonuses
  *

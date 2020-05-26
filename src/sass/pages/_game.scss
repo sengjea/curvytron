@@ -165,8 +165,7 @@
                     }
                 }
             }
-
-            .player {
+            @mixin score-item {
                 border-bottom: 2px solid lighten($game-background, 10%);
                 padding: 10px 5px 10px 23px;
                 position: relative;
@@ -204,7 +203,7 @@
                     border-top: 2px solid lighten($game-background, 10%);
                 }
 
-                .player-name {
+                .name {
                     width: 100%;
                     display: block;
                     white-space: nowrap;
@@ -218,7 +217,7 @@
                     background: lighten($aside-background, 5%);
 
                     .arrow {
-                        left: 6px;
+                        left: 12px;
                         top: 50%;
                         border: solid transparent;
                         content: " ";
@@ -239,13 +238,19 @@
                 }
 
                 .line-color-preview {
-                    width: 6px;
+                    width: 12px;
                     height: 100%;
                     position: absolute;
                     left: 0;
                     top: 0;
                     bottom: 0;
                 }
+            }
+            .player {
+                @include score-item;
+            }
+            .team {
+                @include score-item;
             }
         }
 

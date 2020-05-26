@@ -2,6 +2,7 @@ var EventEmitter = require('events').EventEmitter,
     WebSocket = require('faye-websocket'),
     http = require('http'),
     express = require('express'),
+    expressBasicAuth = require('express-basic-auth'),
     md5,
     usage,
     influx;

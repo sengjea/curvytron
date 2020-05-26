@@ -18,6 +18,13 @@ function Server(config)
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
     this.onError               = this.onError.bind(this);
 
+    if (config.users) {
+        this.app.use(expressBasicAuth({
+            users: config.users,
+            challenge: true,
+            realm: 'WhoGoesThere?'
+        }));
+    }
     this.app.use(express['static']('web'));
 
     this.server.on('error', this.onError);

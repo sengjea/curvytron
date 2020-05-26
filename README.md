@@ -20,3 +20,32 @@ A web multiplayer Tron game like with curves
 
 * [Configuration reference](doc/configuration.md)
 * [Setup Nginx proxy](doc/nginx-proxy.md)
+
+## Deploying
+
+Create all the necessary infrastructure in terraform by doing:
+
+```bash
+cd terraform
+    terraform init \
+        -backend-config="bucket=<tf backend bucket>" \ 
+        -backend-config="dynamodb_table=<tf dynamodb table>"
+    terraform apply [-var acm_certificate_arn="<acm arn>"]
+cd -
+```
+Note that the variable acm_certificate_arn is optional.
+
+
+Whenever you want to deploy a new version:
+```bash
+
+aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin <ecr repo>
+
+docker build . -t <ecr repo>
+docker push <ecr repo>
+
+cd terraform
+    terraform taint aws_ecs_task_definition.curvytron
+    terraform apply [-var acm_certificate_arn="<acm arn>"]
+cd -
+```

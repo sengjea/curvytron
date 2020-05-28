@@ -18,6 +18,9 @@ function Server(config)
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
     this.onError               = this.onError.bind(this);
 
+    this.app.get('/healthcheck', function(req, res) {
+        return res.status(200).send('OK');
+    });
     if (config.users) {
         this.app.use(expressBasicAuth({
             users: config.users,

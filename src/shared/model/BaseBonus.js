@@ -70,5 +70,5 @@ BaseBonus.prototype.applyTo = function (avatar, game) {};
  */
 BaseBonus.prototype.getProbability = function (game)
 {
-    return BaseBonus.prototype.probability;
+    return this.probability;
 };

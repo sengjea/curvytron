@@ -52,7 +52,11 @@ BonusStack.prototype.apply = function(property, value)
             this.target.setInverse(value%2 !== 0);
             break;
         case 'invincible':
-            this.target.setInvincible(value ? true : false);
+            if (value) {
+                this.target.setInvincible(true);
+            } else {
+                setTimeout(this.target.setInvincible.bind(this.target, false), 250);
+            }
             break;
         case 'printing':
             this.target.printManager[value > 0 ? 'start' : 'stop']();

@@ -152,8 +152,8 @@ BasePlayer.prototype.getRandomColor = function()
 
 BasePlayer.prototype.getRandomTeam = function()
 {
-    return String.fromCharCode(65 + Math.floor(Math.random() * 4))
-}
+    return String.fromCharCode(65 + Math.floor(Math.random() * 4));
+};
 /**
  * Validate color
  *

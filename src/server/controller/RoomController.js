@@ -508,7 +508,7 @@ RoomController.prototype.onTeam = function(client, data, callback)
     } else {
         callback({success: false, color: player.color});
     }
-}
+};
 
 /**
  * On player change name

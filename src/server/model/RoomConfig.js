@@ -17,6 +17,7 @@ RoomConfig.prototype.constructor = RoomConfig;
  * @type {Array}
  */
 RoomConfig.prototype.bonusTypes = {
+    BonusSelfGodzilla: BonusSelfGodzilla,
     BonusSelfSmall: BonusSelfSmall,
     BonusSelfSlow: BonusSelfSlow,
     BonusSelfFast: BonusSelfFast,

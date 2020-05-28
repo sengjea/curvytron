@@ -589,7 +589,7 @@
                 height: $bonus-size;
                 display: inline-block;
                 background: url(../images/bonus.png) no-repeat transparent;
-                background-size: $bonus-size*3 $bonus-size*4;
+                background-size: $bonus-size*3 $bonus-size*5;
                 position: relative;
                 text-align: center;
                 color: #FFF;
@@ -617,6 +617,9 @@
                 }
                 &.bonus-self-master {
                     @include bonus-sprite(2, 1);
+                }
+                &.bonus-self-godzilla {
+                    @include bonus-sprite(0, 4);
                 }
                 &.bonus-enemy-big {
                     @include bonus-sprite(0, 2);

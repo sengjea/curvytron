@@ -105,7 +105,7 @@ PlayerListController.prototype.onScore = function(e)
         avatar.setScore(e.detail[1]);
         this.updateScore(avatar);
         if (this.game.room.config.team) {
-            this.updateTeamScore(avatar.player.team)
+            this.updateTeamScore(avatar.player.team);
         }
     }
 };
@@ -141,7 +141,7 @@ PlayerListController.prototype.onRoundNew = function(e)
         this.getElements(this.game.avatars.items[i]).root.classList.remove('dead');
     }
     if (this.game.room.config.team) {
-        this.game.teams.forEach(this.updateTeamRoundScore, this)
+        this.game.teams.forEach(this.updateTeamRoundScore, this);
     }
 };
 

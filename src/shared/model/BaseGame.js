@@ -32,7 +32,7 @@ function BaseGame(room)
     if (room.config.team) {
         var attachTeams = function(player) {
             var teamName = player.teamName || player.color;
-            var team = this.teams.find(function(team) { return team.name === teamName });
+            var team = this.teams.find(function(team) { return team.name === teamName; });
             if (!team) {
                 team = new Team(teamName);
                 this.teams.add(team);

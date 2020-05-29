@@ -20,6 +20,7 @@ RoomConfig.prototype.constructor = RoomConfig;
  * @type {Object}
  */
 RoomConfig.prototype.bonusClasses = {
+    BonusSelfGodzilla: 'bonus-self-godzilla',
     BonusSelfSmall: 'bonus-self-small',
     BonusSelfSlow: 'bonus-self-slow',
     BonusSelfFast: 'bonus-self-fast',
@@ -66,6 +67,10 @@ RoomConfig.prototype.setOpen = function(open)
     this.open = open;
 };
 
+RoomConfig.prototype.setTeam = function(team)
+{
+    this.team = team;
+};
 /**
  * Set password
  *

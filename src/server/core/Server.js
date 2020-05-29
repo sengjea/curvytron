@@ -18,7 +18,17 @@ function Server(config)
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
     this.onError               = this.onError.bind(this);
 
-    this.app.use(express.static('web'));
+    this.app.get('/healthcheck', function(req, res) {
+        return res.status(200).send('OK');
+    });
+    if (config.users) {
+        this.app.use(expressBasicAuth({
+            users: config.users,
+            challenge: true,
+            realm: 'WhoGoesThere?'
+        }));
+    }
+    this.app.use(express['static']('web'));
 
     this.server.on('error', this.onError);
     this.server.on('upgrade', this.authorizationHandler);

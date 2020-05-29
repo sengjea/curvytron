@@ -77,6 +77,21 @@ PlayerListController.prototype.getElements = function(avatar)
     return avatar.elements;
 };
 
+PlayerListController.prototype.getTeamElements = function(team)
+{
+    if (!team.elements.root) {
+        team.elements.root       = document.getElementById('team-' + team.id);
+        team.elements.score      = document.getElementById('team-score-' + team.id);
+        team.elements.roundScore = document.getElementById('team-round-score-' + team.id);
+
+        if (team.local) {
+            team.elements.root.classList.add('local');
+        }
+    }
+
+    return team.elements;
+};
+
 /**
  * On score
  *
@@ -89,6 +104,9 @@ PlayerListController.prototype.onScore = function(e)
     if (avatar) {
         avatar.setScore(e.detail[1]);
         this.updateScore(avatar);
+        if (this.game.room.config.team) {
+            this.updateTeamScore(avatar.player.team);
+        }
     }
 };
 
@@ -104,6 +122,9 @@ PlayerListController.prototype.onRoundScore = function(e)
     if (avatar) {
         avatar.setRoundScore(e.detail[1]);
         this.updateRoundScore(avatar);
+        if (this.game.room.config.team) {
+            this.updateTeamRoundScore(avatar.player.team);
+        }
     }
 };
 
@@ -118,6 +139,9 @@ PlayerListController.prototype.onRoundNew = function(e)
 
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
         this.getElements(this.game.avatars.items[i]).root.classList.remove('dead');
+    }
+    if (this.game.room.config.team) {
+        this.game.teams.forEach(this.updateTeamRoundScore, this);
     }
 };
 
@@ -167,6 +191,15 @@ PlayerListController.prototype.updateRoundScore = function(avatar)
     this.getElements(avatar).roundScore.innerHTML = avatar.roundScore ? '+' + avatar.roundScore : '';
 };
 
+PlayerListController.prototype.updateTeamScore = function(team)
+{
+    this.getTeamElements(team).score.innerHTML = team.getScore();
+};
+
+PlayerListController.prototype.updateTeamRoundScore = function(team)
+{
+    this.getTeamElements(team).roundScore.innerHTML = team.getRoundScore() ? '+' + team.getRoundScore() : '';
+};
 /**
  * Reorder player list
  */

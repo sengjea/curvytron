@@ -17,6 +17,7 @@ RoomConfig.prototype.constructor = RoomConfig;
  * @type {Array}
  */
 RoomConfig.prototype.bonusTypes = {
+    BonusSelfGodzilla: BonusSelfGodzilla,
     BonusSelfSmall: BonusSelfSmall,
     BonusSelfSlow: BonusSelfSlow,
     BonusSelfFast: BonusSelfFast,
@@ -49,7 +50,12 @@ RoomConfig.prototype.setOpen = function(open)
 
     return false;
 };
-
+RoomConfig.prototype.setTeam = function(team)
+{
+    this.team = team;
+    this.emit('room:config:team', {room: this.room, team: this.team});
+    return true;
+};
 /**
  * Get available bonuses
  *

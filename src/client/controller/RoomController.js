@@ -46,10 +46,12 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.setReady         = this.setReady.bind(this);
     this.setName          = this.setName.bind(this);
     this.setTouch         = this.setTouch.bind(this);
+    this.setTeam          = this.setTeam.bind(this);
     this.updateProfile    = this.updateProfile.bind(this);
     this.toggleParameters = this.toggleParameters.bind(this);
     this.onRoomMaster     = this.onRoomMaster.bind(this);
     this.onConfigOpen     = this.onConfigOpen.bind(this);
+    this.onConfigTeam     = this.onConfigTeam.bind(this);
     this.onLaunchStart    = this.onLaunchStart.bind(this);
     this.onLaunchTimer    = this.onLaunchTimer.bind(this);
     this.onLaunchCancel   = this.onLaunchCancel.bind(this);
@@ -64,12 +66,14 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.removePlayer      = this.removePlayer;
     this.$scope.kickPlayer        = this.kickPlayer;
     this.$scope.setColor          = this.setColor;
+    this.$scope.setTeam           = this.setTeam;
     this.$scope.setReady          = this.setReady;
     this.$scope.setName           = this.setName;
     this.$scope.setTouch          = this.setTouch;
     this.$scope.toggleParameters  = this.toggleParameters;
     this.$scope.nameMaxLength     = Player.prototype.maxLength;
     this.$scope.colorMaxLength    = Player.prototype.colorMaxLength;
+    this.$scope.teamMaxLength     = Player.prototype.teamMaxLength;
     this.$scope.hasTouch          = this.hasTouch;
     this.$scope.master            = this.repository.amIMaster();
     this.$scope.displayParameters = false;
@@ -155,10 +159,12 @@ RoomController.prototype.attachEvents = function()
     this.repository.on('player:ready', this.requestDigestScope);
     this.repository.on('player:color', this.requestDigestScope);
     this.repository.on('player:name', this.requestDigestScope);
+    this.repository.on('player:team', this.requestDigestScope);
     this.repository.on('client:activity', this.requestDigestScope);
     this.repository.on('room:master', this.onRoomMaster);
     this.repository.on('room:game:start', this.start);
     this.repository.on('room:config:open', this.onConfigOpen);
+    this.repository.on('room:config:team', this.onConfigTeam);
     this.repository.on('room:launch:start', this.onLaunchStart);
     this.repository.on('room:launch:cancel', this.onLaunchCancel);
 
@@ -178,10 +184,12 @@ RoomController.prototype.detachEvents = function()
     this.repository.off('player:ready', this.requestDigestScope);
     this.repository.off('player:color', this.requestDigestScope);
     this.repository.off('player:name', this.requestDigestScope);
+    this.repository.off('player:team', this.requestDigestScope);
     this.repository.off('client:activity', this.requestDigestScope);
     this.repository.off('room:master', this.onRoomMaster);
     this.repository.off('room:game:start', this.start);
     this.repository.off('room:config:open', this.onConfigOpen);
+    this.repository.off('room:config:team', this.onConfigTeam);
     this.repository.off('room:launch:start', this.onLaunchStart);
     this.repository.off('room:launch:cancel', this.onLaunchCancel);
 
@@ -213,17 +221,18 @@ RoomController.prototype.launch = function()
 /**
  * Add player
  */
-RoomController.prototype.addPlayer = function(name, color)
+RoomController.prototype.addPlayer = function(name, color, team)
 {
     var $scope = this.$scope;
 
     name  = typeof(name) !== 'undefined' ? name : $scope.username;
     color = typeof(color) !== 'undefined' ? color : null;
-
+    team = typeof(team) !== 'undefined' ? team : null;
     if (name) {
         this.repository.addPlayer(
             name,
             color,
+            team,
             function (result) {
                 if (result.success) {
                     $scope.username = null;
@@ -278,6 +287,11 @@ RoomController.prototype.onConfigOpen = function(e)
     this.applyScope();
 };
 
+RoomController.prototype.onConfigTeam = function(e)
+{
+    this.room.config.team = e.detail.team;
+    this.applyScope();
+};
 /**
  * On join
  *
@@ -332,6 +346,18 @@ RoomController.prototype.setColor = function(player)
     );
 };
 
+RoomController.prototype.setTeam = function(player)
+{
+    if (!player.local) { return; }
+    
+    var controller = this;
+
+    this.repository.setTeam(
+        player,
+        player.teamName,
+        controller.digestScope
+    );
+};
 /**
  * Set player name
  *

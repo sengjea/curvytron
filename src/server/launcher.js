@@ -10,7 +10,7 @@ try {
     };
 }
 
-var server = new Server({ port: config.port });
+var server = new Server({ port: config.port, users: config.users });
 
 if (config.inspector.enabled) {
     try {

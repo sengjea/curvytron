@@ -13,6 +13,11 @@
             </span>
 
             <div class="game-players" ng-controller="PlayerListController">
+                <div ng-if="::game.room.config.team" ng-repeat="team in ::teams track by team.id" id="team-{{ ::team.id }}" class="team">
+                    <span class="round-points" id="team-round-score-{{ ::team.id }}"></span>
+                    <span class="player-name" title="{{ ::team.name }}">{{ ::team.name }}</span>
+                    <span class="score" id="team-score-{{ ::team.id }}">0</span>
+                </div>
                 <div ng-repeat="avatar in ::avatars track by avatar.id" id="avatar-{{ ::avatar.id }}" class="player">
                     <span class="line-color-preview" style="background-color: {{ ::avatar.player.color }};"></span>
                     <span class="arrow" style="border-left-color: {{ ::avatar.player.color }};" ng-if="avatar.local"></span>

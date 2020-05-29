@@ -5,7 +5,7 @@
  * @param {String} name
  * @param {String} color
  */
-function BasePlayer(client, name, color, ready)
+function BasePlayer(client, name, color, ready, teamName)
 {
     EventEmitter.call(this);
 
@@ -13,8 +13,10 @@ function BasePlayer(client, name, color, ready)
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' && this.validateColor(color) ? color : this.getRandomColor();
     this.ready  = typeof(ready) !== 'undefined' && ready;
+    this.teamName = typeof(teamName) !== 'undefined' ? teamName : this.getRandomTeam();
     this.id     = null;
     this.avatar = null;
+    this.team   = null;
 }
 
 BasePlayer.prototype = Object.create(EventEmitter.prototype);
@@ -34,6 +36,7 @@ BasePlayer.prototype.maxLength = 25;
  */
 BasePlayer.prototype.colorMaxLength = 20;
 
+BasePlayer.prototype.teamMaxLength = 1;
 /**
  * Set name
  *
@@ -54,6 +57,15 @@ BasePlayer.prototype.setColor = function(color)
     if (!this.validateColor(color, true)) { return false; }
 
     this.color = color;
+
+    return true;
+};
+
+BasePlayer.prototype.setTeam = function(teamName)
+{
+    if (teamName.length > this.teamMaxLength) { return false; }
+
+    this.teamName = teamName;
 
     return true;
 };
@@ -116,7 +128,8 @@ BasePlayer.prototype.serialize = function()
         id: this.id,
         name: this.name,
         color: this.color,
-        ready: this.ready
+        ready: this.ready,
+        team: this.teamName
     };
 };
 
@@ -137,6 +150,10 @@ BasePlayer.prototype.getRandomColor = function()
     return color;
 };
 
+BasePlayer.prototype.getRandomTeam = function()
+{
+    return String.fromCharCode(65 + Math.floor(Math.random() * 4));
+};
 /**
  * Validate color
  *

@@ -15,6 +15,7 @@ function RoomConfigController($scope, repository)
     this.onJoined     = this.onJoined.bind(this);
     this.toggleBonus  = this.toggleBonus.bind(this);
     this.togglePreset = this.togglePreset.bind(this);
+    this.setTeam      = this.setTeam.bind(this);
     this.setOpen      = this.setOpen.bind(this);
     this.setMaxScore  = this.setMaxScore.bind(this);
     this.setVariable  = this.setVariable.bind(this);
@@ -23,6 +24,7 @@ function RoomConfigController($scope, repository)
     this.$scope.toggleBonus  = this.toggleBonus;
     this.$scope.togglePreset = this.togglePreset;
     this.$scope.setOpen      = this.setOpen;
+    this.$scope.setTeam      = this.setTeam;
     this.$scope.setMaxScore  = this.setMaxScore;
     this.$scope.setVariable  = this.setVariable;
 
@@ -30,7 +32,7 @@ function RoomConfigController($scope, repository)
     this.repository.on('config:max-score', this.digestScope);
     this.repository.on('config:variable', this.digestScope);
     this.repository.on('config:bonus', this.digestScope);
-
+    this.repository.on('config:team', this.digestScope);
     this.$scope.$parent.$watch('room', this.onJoined);
 }
 
@@ -113,6 +115,17 @@ RoomConfigController.prototype.setOpen = function(open)
         this.repository.setConfigOpen(open, function (result) {
             config.setOpen(result.open);
             config.setPassword(result.password);
+        });
+    }
+};
+
+RoomConfigController.prototype.setTeam = function(team)
+{
+    if (this.repository.amIMaster()) {
+        var config = this.config;
+
+        this.repository.setConfigTeam(team, function (result) {
+            config.setTeam(result.team);
         });
     }
 };

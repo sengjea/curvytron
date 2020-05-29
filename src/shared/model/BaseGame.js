@@ -11,6 +11,7 @@ function BaseGame(room)
     this.name         = this.room.name;
     this.frame        = null;
     this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
+    this.teams        = new Collection([], 'id', true);
     this.size         = this.getSize(this.avatars.count());
     this.rendered     = null;
     this.maxScore     = room.config.getMaxScore();
@@ -26,6 +27,21 @@ function BaseGame(room)
     this.endRound = this.endRound.bind(this);
     this.end      = this.end.bind(this);
     this.onFrame  = this.onFrame.bind(this);
+
+
+    if (room.config.team) {
+        var attachTeams = function(player) {
+            var teamName = player.teamName || player.color;
+            var team = this.teams.find(function(team) { return team.name === teamName; });
+            if (!team) {
+                team = new Team(teamName);
+                this.teams.add(team);
+            }
+            team.add(player);
+            player.team = team;
+        };
+        this.room.players.forEach(attachTeams, this);
+    }
 }
 
 BaseGame.prototype = Object.create(EventEmitter.prototype);
@@ -57,7 +73,7 @@ BaseGame.prototype.warmupTime = 3000;
  *
  * @type {Number}
  */
-BaseGame.prototype.warmdownTime = 5000;
+BaseGame.prototype.warmdownTime = 2000;
 
 /**
  * Margin from borders

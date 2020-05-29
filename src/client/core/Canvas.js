@@ -136,6 +136,25 @@ Canvas.prototype.clearZoneScaled = function(x, y, width, height)
     );
 };
 
+Canvas.prototype.clearZoneScaledAngle = function (x, y, width, height, angle)
+{
+    x = this.round(x * this.scale);
+    y = this.round(y * this.scale);
+    width = this.round((width / 2) * this.scale);
+    height = this.round((height / 2) * this.scale);
+  
+    var centerX = x + width,
+      centerY = y + height;
+  
+    x = -width;
+    y = -height;
+  
+    this.context.save();
+    this.context.translate(centerX, centerY);
+    this.context.rotate(angle);
+    this.context.clearRect(x, y, width * 2, height * 2);
+    this.context.restore();
+};
 /**
  * Save context
  */

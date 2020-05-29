@@ -8,6 +8,7 @@ function BaseRoomConfig(room)
     this.room     = room;
     this.maxScore = null;
     this.open     = true;
+    this.team     = false;
     this.password = null;
 
     this.variables = {
@@ -15,6 +16,7 @@ function BaseRoomConfig(room)
     };
 
     this.bonuses  = {
+        BonusSelfGodzilla: false,
         BonusSelfSmall: true,
         BonusSelfSlow: true,
         BonusSelfFast: true,
@@ -218,6 +220,7 @@ BaseRoomConfig.prototype.serialize = function()
         variables: this.variables,
         bonuses: this.bonuses,
         open: this.open,
+        team: this.team,
         password: this.password
     };
 };

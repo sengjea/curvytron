@@ -146,6 +146,10 @@ Collection.prototype.getElementIndex = function(element)
     return this.ids.indexOf(element[this.key]);
 };
 
+Collection.prototype.find = function(callable)
+{
+    return this.items.find(callable);
+};
 /**
  * Get the index fo the given id
  *
@@ -237,6 +241,11 @@ Collection.prototype.map = function(callable)
     return new Collection(elements, this.key, this.index);
 };
 
+
+Collection.prototype.reduce = function(callable, initialValue)
+{
+    return this.items.reduce(callable, initialValue);
+};
 /**
  * Filter
  *
@@ -282,11 +291,9 @@ Collection.prototype.match = function(callable)
  *
  * @param {Function} callable
  */
-Collection.prototype.walk = function(callable)
-{
-    for (var i = this.items.length - 1; i >= 0; i--) {
-        callable.call(this.items[i]);
-    }
+Collection.prototype.forEach = function(callable, thisArg)
+{   
+    return this.items.forEach(callable, thisArg);
 };
 
 /**

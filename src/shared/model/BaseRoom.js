@@ -137,7 +137,8 @@ BaseRoom.prototype.serialize = function(full)
         name: this.name,
         players: full ? this.players.map(function () { return this.serialize(); }).items : this.players.count(),
         game: this.game ? true : false,
-        open: this.config.open
+        open: this.config.open,
+        team: this.config.team
     };
 
     if (full) {

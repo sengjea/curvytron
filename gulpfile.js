@@ -138,15 +138,15 @@ gulp.task('copy-stress-test', function() {
         .pipe(gulp.dest(recipes.client.path));
 });
 
-gulp.task('watch', ['dev'], function () {
-    gulp.watch('src/shared/**/*.js', ['jshint', 'server', 'front-full']);
-    gulp.watch('src/client/**/*.js', ['jshint', 'front-full']);
-    gulp.watch('src/server/**/*.js', ['jshint', 'server']);
-    gulp.watch('src/client/views/*/*.html', ['views']);
-    gulp.watch('src/client/views/*.html', ['ga']);
-    gulp.watch('src/client/stressTest.js', ['copy-stress-test']);
-    gulp.watch('src/sass/**/*.scss', ['sass-full']);
-});
+gulp.task('dev', gulp.series('jshint', 'server', 'front-expose', 'copy-stress-test', 'views', 'front-full', 'sass-full'));
 
-gulp.task('default', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-expose', 'copy-stress-test', 'ga', 'views', 'front-full', 'sass-full']);
+gulp.task('watch', gulp.series('dev', function () {
+    gulp.watch('src/shared/**/*.js', gulp.series('jshint', 'server', 'front-full'));
+    gulp.watch('src/client/**/*.js', gulp.series('jshint', 'front-full'));
+    gulp.watch('src/server/**/*.js', gulp.series('jshint', 'server'));
+    gulp.watch('src/client/views/*/*.html', gulp.series('views'));
+    gulp.watch('src/client/stressTest.js', gulp.series('copy-stress-test'));
+    gulp.watch('src/sass/**/*.scss', gulp.series('sass-full'));
+}));
+
+gulp.task('default', gulp.series('jshint', 'server', 'front-expose', 'ga', 'views', 'front-min', 'sass-min'));

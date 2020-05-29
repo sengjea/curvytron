@@ -45,6 +45,7 @@
                         <th class="col-remove"></th>
                         <th class="col-icon"></th>
                         <th class="col-player">Name</th>
+                        <th class="col-team" ng-if="room.config.team">Team</th>
                         <th class="col-color">Color</th>
                         <th class="col-keys">Controls</th>
                         <th class="col-ready">Ready?</th>
@@ -67,6 +68,9 @@
                         </td>
                         <td class="col-player">
                             <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ ::nameMaxLength }}" />
+                        </td>
+                        <td class="col-team" ng-if="room.config.team">
+                            <input type="text" ng-model="player.teamName" ng-blur="setTeam(player)" class="form-control control" name="teamName" maxlength="{{ ::teamMaxLength }}" />
                         </td>
                         <td class="col-color">
                             <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ ::colorMaxLength }}" />
@@ -101,6 +105,9 @@
                         </td>
                         <td class="col-player">
                             <p class="player-name">{{ player.name }}</p>
+                        </td>
+                        <td class="col-team" ng-if="room.config.team">
+                            <p class="player-name">{{ player.teamName }}</p>
                         </td>
                         <td class="col-color">
                             <span class="line-color-preview" style="background-color: {{ player.color }};"></span>

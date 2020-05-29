@@ -12,7 +12,7 @@ function BonusSelfGodzilla(x, y)
 BonusSelfGodzilla.prototype = Object.create(BonusSelf.prototype);
 BonusSelfGodzilla.prototype.constructor = BonusSelfGodzilla;
 
-BonusSelfGodzilla.prototype.probability = 0.1;
+BonusSelfGodzilla.prototype.probability = 0.2;
 /**
  * Get effects
  *

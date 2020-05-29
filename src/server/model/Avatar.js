@@ -25,6 +25,7 @@ Avatar.prototype.update = function(step)
     if (this.alive) {
         this.updateAngle(step);
         this.updatePosition(step);
+        //this.degradeAcceleration();
 
         if (this.printing && this.isTimeToDraw()) {
             this.addPoint(this.x, this.y);

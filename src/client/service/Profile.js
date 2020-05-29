@@ -12,7 +12,9 @@ function Profile()
     this.loading  = false;
     this.controls = [
         new PlayerControl(37, 'icon-left-dir'),
-        new PlayerControl(39, 'icon-right-dir')
+        new PlayerControl(39, 'icon-right-dir'),
+        new PlayerControl(40, 'icon-down-dir'),
+        new PlayerControl(38, 'icon-up-dir')
     ];
 
     // Binding

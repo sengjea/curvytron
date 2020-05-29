@@ -29,6 +29,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     // Binding
     this.checkReady   = this.checkReady.bind(this);
     this.onMove       = this.onMove.bind(this);
+    this.onAccelerate = this.onAccelerate.bind(this);
     this.onSpectate   = this.onSpectate.bind(this);
     this.onUnload     = this.onUnload.bind(this);
     this.onExit       = this.onExit.bind(this);
@@ -105,6 +106,8 @@ GameController.prototype.loadGame = function(game)
         avatar = this.game.avatars.items[i];
         if (avatar.local) {
             avatar.input.on('move', this.onMove);
+            avatar.input.on('accelerate', this.onAccelerate);
+
             if (avatar.input.useGamepad()) {
                 gamepadListener.start();
             }
@@ -156,6 +159,12 @@ GameController.prototype.onFirstRound = function(e)
 GameController.prototype.onMove = function(e)
 {
     this.client.addEvent('player:move', {avatar: e.detail.avatar.id, move: e.detail.move ? e.detail.move : 0});
+};
+
+
+GameController.prototype.onAccelerate = function(e)
+{
+    this.client.addEvent('player:accelerate', {avatar: e.detail.avatar.id, acceleration: e.detail.acceleration ? e.detail.acceleration : 0});
 };
 
 /**
@@ -242,6 +251,7 @@ GameController.prototype.close = function()
 
         for (var i = avatars.length - 1; i >= 0; i--) {
             avatars[i].input.off('move', this.onMove);
+            avatars[i].input.off('accelerate', this.onAccelerate);
         }
 
         delete this.game;

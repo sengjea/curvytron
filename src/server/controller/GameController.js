@@ -33,7 +33,8 @@ function GameController(game)
 
     this.callbacks = {
         onReady: function () { controller.onReady(this); },
-        onMove: function (data) { controller.onMove(this, data); }
+        onMove: function (data) { controller.onMove(this, data); },
+        onAccelerate: function(data) { controller.onAccelerate(this, data); }
     };
 
     this.loadGame();
@@ -145,6 +146,7 @@ GameController.prototype.attachEvents = function(client)
 
     if (!client.players.isEmpty()) {
         client.on('player:move', this.callbacks.onMove);
+        client.on('player:accelerate', this.callbacks.onAccelerate);
     }
 
     for (var avatar, i = client.players.items.length - 1; i >= 0; i--) {
@@ -174,6 +176,7 @@ GameController.prototype.detachEvents = function(client)
 
     if (!client.players.isEmpty()) {
         client.removeListener('player:move', this.callbacks.onMove);
+        client.removeListener('player:accelerate', this.callbacks.onAccelerate);
     }
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
@@ -317,6 +320,21 @@ GameController.prototype.onMove = function(client, data)
 
     if (player && player.avatar) {
         player.avatar.updateAngularVelocity(data.move);
+    }
+};
+
+/**
+ * Updates the player's acceleration from inpus from WebSocket
+ *
+ * @param {SocketClient} client
+ * @param {Number} acceleration
+ */
+GameController.prototype.onAccelerate = function(client, data)
+{
+    var player = client.players.getById(data.avatar);
+
+    if (player && player.avatar) {
+        player.avatar.updateAcceleration(data.acceleration);
     }
 };
 

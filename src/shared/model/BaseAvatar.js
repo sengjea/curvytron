@@ -25,7 +25,11 @@ function BaseAvatar(player)
     this.roundScore      = 0;
     this.ready           = false;
     this.present         = true;
-
+    //acceleration
+    this.velocityCoefficient = 1.0;
+    this.accelerationDuration = 2000;
+    this.accelerationTriggeredAt = null;
+    this.accelerationCooldown = 10000;
     // useless too? this.updateVelocities();
 }
 
@@ -154,9 +158,7 @@ BaseAvatar.prototype.setAngle = function(angle)
     }
 };
 
-/**
- * Update
- *
+/**accelerationTriggeredAt
  * @param {Number} step
  */
 BaseAvatar.prototype.update = function(step) {};
@@ -191,6 +193,23 @@ BaseAvatar.prototype.updatePosition = function(step)
     );
 };
 
+
+BaseAvatar.prototype.degradeAcceleration = function(step)
+{
+    if(this.accelerationTriggeredAt){
+        var duration = Date.now() - this.acceleration;
+        if( duration > this.accelerationDuration) {
+            if(this.velocityCoefficient !== 1.0){
+                this.velocityCoefficient = 1.0;
+                this.updateVelocities();
+            }
+        }
+        if( duration > this.accelerationCooldown + this.accelerationDuration){
+            this.accelerationTriggeredAt = null;
+        }
+    }
+};
+
 /**
  * Set velocity
  *
@@ -211,7 +230,7 @@ BaseAvatar.prototype.setVelocity = function(velocity)
  */
 BaseAvatar.prototype.updateVelocities = function()
 {
-    var velocity = this.velocity/1000;
+    var velocity = this.velocityCoefficient * (this.velocity/1000);
 
     this.velocityX = Math.cos(this.angle) * velocity;
     this.velocityY = Math.sin(this.angle) * velocity;
@@ -415,3 +434,26 @@ BaseAvatar.prototype.serialize = function()
         score: this.score
     };
 };
+
+
+/**
+ * Simplistic acceleration control that just increases the base velocity
+ */
+BaseAvatar.prototype.updateAcceleration = function(amount){
+    // if(this.accelerationTriggeredAt){
+    //     console.log("Acceleration event denied because of cooldown");
+    //     return;
+    // }
+    //console.log("Updating acceleration:"+amount)
+    
+    if(amount > 0){
+        this.velocityCoefficient = 1.5;
+    } else if( amount < 0 ){
+        this.velocityCoefficient = 0.65
+    } else {
+        this.velocityCoefficient = 1.0;   
+    }
+
+    //this.accelerationTriggeredAt = Date.now();
+    this.updateVelocities();
+}

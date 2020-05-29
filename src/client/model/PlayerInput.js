@@ -7,8 +7,9 @@ function PlayerInput(avatar, binding)
 
     this.avatar  = avatar;
     this.key     = false;
-    this.active  = [false, false];
+    this.active  = [false, false, false, false];
     this.move    = 0;
+    this.acceleration = 0;
     this.width   = 0;
     this.binding = typeof(binding) !== 'undefined' ? binding : this.defaultBinding;
 
@@ -29,7 +30,7 @@ PlayerInput.prototype.constructor = PlayerInput;
  *
  * @type {Object}
  */
-PlayerInput.prototype.defaultBinding = [37, 39];
+PlayerInput.prototype.defaultBinding = [37, 39, 38, 40];
 
 /**
  * Attach events
@@ -228,9 +229,14 @@ PlayerInput.prototype.setActive = function(index, pressed)
 PlayerInput.prototype.resolve = function()
 {
     var move = (this.active[0] !== this.active[1]) ? (this.active[0] ? -1 : 1) : false;
+    var acceleration = (this.active[2] === this.active[3]) ? 0 : (this.active[3] ? 1 : -1);
 
     if (this.move !== move) {
         this.setMove(move);
+    }
+
+    if (this.acceleration !== acceleration){
+        this.setAcceleration(acceleration);   
     }
 };
 
@@ -260,6 +266,12 @@ PlayerInput.prototype.setMove = function(move)
     this.move = move;
     this.emit('move', {avatar: this.avatar, move: move});
 };
+
+
+PlayerInput.prototype.setAcceleration = function(acceleration){
+    this.acceleration = acceleration;
+    this.emit('accelerate', {avatar: this.avatar, acceleration: acceleration})
+}
 
 /**
  * Set width

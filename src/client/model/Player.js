@@ -46,7 +46,9 @@ Player.prototype.initControls = function()
     if (!this.controls) {
         this.controls = [
             new PlayerControl(37, 'icon-left-dir'),
-            new PlayerControl(39, 'icon-right-dir')
+            new PlayerControl(39, 'icon-right-dir'),
+            new PlayerControl(40, 'icon-down-dir'),
+            new PlayerControl(38, 'icon-up-dir')
         ];
 
         for (var i = this.controls.length - 1; i >= 0; i--) {
@@ -100,7 +102,7 @@ Player.prototype.onControlChange = function(e)
  */
 Player.prototype.getBinding = function()
 {
-    return [this.controls[0].mapper.value, this.controls[1].mapper.value];
+    return [this.controls[0].mapper.value, this.controls[1].mapper.value, this.controls[2].mapper.value, this.controls[3].mapper.value];
 };
 
 /**
